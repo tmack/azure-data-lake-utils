@@ -1,6 +1,5 @@
-# Python Project Template 
-A template for starting a new project in python. This project contains basic infrastructure for testing and CI/CD with github actions.
-
+# Azure Data Lake Utils
+A set of utilities for interacting with Azure Data Lake Storage. Written in python 3.
 ## Installing Requirements
 ```bash
 $ pip install -r requirements.txt

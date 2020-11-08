@@ -1,1 +1,2 @@
-
+azure-storage-blob==12.5.0
+click==7.1.2
