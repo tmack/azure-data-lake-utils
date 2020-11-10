@@ -1,13 +1,11 @@
 import logging
-import os
+from data_lake_storage import AzureDataLakeUtils
 
 
-def test_settings_exists(test_config_path='./test-local.settings.json'):
-    if os.path.exists(test_config_path):
-        return True
-    return False
+def test_data_lake_storage():
+    data_lake = AzureDataLakeUtils()
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    test_settings_exists()
+    test_data_lake_storage()

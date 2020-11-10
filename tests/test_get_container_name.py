@@ -1,6 +1,6 @@
 import unittest
 from tests.test_helper import setup_test_local_settings
-from azure_data_lake_storage import AzureDataLakeUtils
+from data_lake_storage import AzureDataLakeUtils
 import os
 
 
@@ -94,7 +94,6 @@ class TestGetContainerName(unittest.TestCase):
         # validate
         expected_container_name = 'default'
         self.assertEqual(expected_container_name, container_name)
-
 
     def test_get_container_name_invalid_name_special_chars(self):
         # setup

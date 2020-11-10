@@ -9,7 +9,7 @@ class DataLakeSecretsManager:
 		pass
 
 	@staticmethod
-	def load_service_principal(storage_account_name, path=None):
+	def  load_service_principal(storage_account_name, path=None):
 		logging.info(f'Loading service principal {storage_account_name}, path: {path}')
 		# first try to load from environment variables
 		env_tenant_id, env_client_id, env_client_secret = DataLakeSecretsManager._load_service_principal_from_env(storage_account_name)

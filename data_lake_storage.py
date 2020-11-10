@@ -1,5 +1,7 @@
 import os
 from azure.storage.blob import BlobServiceClient
+from azure.identity import ClientSecretCredential
+from data_lake_secrets_manager import DataLakeSecretsManager
 import logging
 import re
 
@@ -9,27 +11,29 @@ class AzureDataLakeUtils:
     def __init__(self):
         pass
 
-    def upload_data(self, data, upload_path, overwrite=False, storage_url=None, storage_account_key=None):
+    def upload_data(self, data, upload_path, overwrite=False, storage_account_name=None,
+                    settings_path='local.settings.json'):
         container_name = self._get_container_name(upload_path)
         upload_path = self._update_path_from_container_name(container_name, upload_path)
-        data_lake_client = self._get_data_lake_client(storage_url, storage_account_key)
+        data_lake_client = self._get_data_lake_client(storage_account_name, settings_path)
         blob_client = data_lake_client.get_blob_client(container=container_name, blob=upload_path)
         upload_results = blob_client.upload_blob(data, overwrite=overwrite)
         return upload_results
 
-    def upload_file(self, file_path, upload_path, overwrite=False, storage_url=None, storage_account_key=None):
+    def upload_file(self, file_path, upload_path, overwrite=False, storage_account_name=None,
+                    settings_path='local.settings.json'):
         container_name = self._get_container_name(upload_path)
         upload_path = self.get_blob_path(upload_path)
-        data_lake_client = self._get_data_lake_client(storage_url, storage_account_key)
+        data_lake_client = self._get_data_lake_client(storage_account_name, settings_path)
         blob_client = data_lake_client.get_blob_client(container=container_name, blob=upload_path)
         with open(file_path, 'rb') as f:
             file_content = f.read()
             upload_results = blob_client.upload_blob(file_content, overwrite=overwrite)
         return upload_results
 
-    def download(self, file_path, download_path, storage_url=None, storage_account_key=None):
+    def download(self, file_path, download_path, storage_account_name=None, settings_path='local.settings.json'):
         container_name = self._get_container_name(file_path)
-        data_lake_client = self._get_data_lake_client(storage_url, storage_account_key)
+        data_lake_client = self._get_data_lake_client(storage_account_name, settings_path)
         blob_path = self.get_blob_path(file_path)
         blob_client = data_lake_client.get_blob_client(container=container_name, blob=blob_path)
         with open(download_path, "wb") as my_blob:
@@ -37,9 +41,9 @@ class AzureDataLakeUtils:
             my_blob.write(download_stream.readall())
         return download_path
 
-    def list(self, directory='', storage_url=None, storage_account_key=None):
+    def list(self, directory='', storage_account_name=None, settings_path='local.settings.json'):
         container_name = self._get_container_name(directory)
-        data_lake_client = self._get_data_lake_client(storage_url, storage_account_key)
+        data_lake_client = self._get_data_lake_client(storage_account_name, settings_path)
         container_client = data_lake_client.get_container_client(container_name)
         blob_path = self.get_blob_path(directory)
         files = container_client.list_blobs(name_starts_with=blob_path)
@@ -48,33 +52,24 @@ class AzureDataLakeUtils:
     def get_blob_path(self, directory):
         container_name = self._get_container_name(directory)
         path = directory[len(container_name)+1:]
-        path = path if path.startswith('/') else '/' + path
         blob_path = path
         return blob_path
 
-    def get_file_info(self, file_path):
-        data_lake_client = self._get_data_lake_client()
+    def get_file_info(self, file_path, storage_account_name, settings_path='local.settings.json'):
         container_name = self._get_container_name(file_path)
+        data_lake_client = self._get_data_lake_client(storage_account_name, settings_path)
         file_path = self._update_path_from_container_name(container_name, file_path)
         blob_client = data_lake_client.get_blob_client(container=container_name, blob=file_path)
         file_info = blob_client.get_blob_properties()
         return file_info
 
-    def delete_file(self, file_path):
-        data_lake_client = self._get_data_lake_client()
+    def delete_file(self, file_path, storage_account_name, settings_path='local.settings.json'):
         container_name = self._get_container_name(file_path)
+        data_lake_client = self._get_data_lake_client(storage_account_name, settings_path)
         file_path = self._update_path_from_container_name(container_name, file_path)
         blob_client = data_lake_client.get_blob_client(container=container_name, blob=file_path)
         delete_results = blob_client.delete_blob()
         return delete_results
-
-    def undelete_file(self, file_path):
-        data_lake_client = self._get_data_lake_client()
-        container_name = self._get_container_name(file_path)
-        file_path = self._update_path_from_container_name(container_name, file_path)
-        blob_client = data_lake_client.get_blob_client(container=container_name, blob=file_path)
-        undelete_results = blob_client.undelete_blob()
-        return undelete_results
 
     @staticmethod
     def _get_container_name(upload_path, container_name='default'):
@@ -86,8 +81,10 @@ class AzureDataLakeUtils:
 
     @staticmethod
     def _update_path_from_container_name(container_name, upload_path):
-        if upload_path.startswith('%s:'.format(container_name)):
-            upload_path = upload_path[len('%s:'.format(container_name)):]
+        if upload_path.startswith(f'{container_name}:'):
+            upload_path = upload_path[len(f'{container_name}:'.format(container_name)):]
+        if upload_path.startswith(f'{container_name}/'):
+            upload_path = upload_path[len(f'{container_name}/'.format(container_name)):]
         return upload_path
 
     @staticmethod
@@ -112,30 +109,18 @@ class AzureDataLakeUtils:
         return container_name
 
     @staticmethod
-    def _get_data_lake_client(storage_url=None, storage_account_key=None):
-        try:
-            if storage_url is None:
-                storage_url = os.environ['StorageURL']
-            if storage_account_key is None:
-                storage_account_key = os.environ['StorageAccountKey']
-            client = BlobServiceClient(account_url=storage_url, credential=storage_account_key)
-            return client
-        except:
-            logging.exception('Unable to get data lake client')
-
-    @staticmethod
-    def initialize_storage_account_ad(storage_account_name, client_id, client_secret, tenant_id):
+    def _get_data_lake_client(storage_account_name, settings_path='local.settings.json'):
 
         try:
-            global service_client
-
+            tenant_id, client_id, client_secret = DataLakeSecretsManager.load_service_principal(storage_account_name,
+                                                                                                path=settings_path)
+            account_url = f"https://{storage_account_name}.blob.core.windows.net/"
             credential = ClientSecretCredential(tenant_id, client_id, client_secret)
-
-            service_client = DataLakeServiceClient(account_url="{}://{}.dfs.core.windows.net".format(
-                "https", storage_account_name), credential=credential)
-
+            client = BlobServiceClient(account_url=account_url, credential=credential)
+            return client
         except Exception as e:
-            print(e)
+            logging.exception('Unable to get data lake client')
+            raise Exception(e)
 
 
 if __name__ == '__main__':

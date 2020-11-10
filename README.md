@@ -32,3 +32,28 @@ Ran 1 tests in 0.001s
 OK
 ```
 
+Example Usage
+```python
+import logging 
+from data_lake_storage import AzureDataLakeUtils
+
+data_lake = AzureDataLakeUtils()
+data = 'testing testing'
+upload_path = 'default/test.txt'
+storage_account_name = 'storageaccountname'
+results = data_lake.upload_data(data, upload_path, overwrite=True, storage_account_name=storage_account_name)
+logging.info(results)
+data_lake.download(file_path='default/test.txt', download_path='test.txt', storage_account_name=storage_account_name)
+blobs = data_lake.list(storage_account_name=storage_account_name)
+logging.info([blob for blob in blobs])
+results = data_lake.upload_file(file_path='test.txt', overwrite=True, upload_path='default/test2.txt',
+                                storage_account_name=storage_account_name)
+logging.info(results)
+file_info = data_lake.get_file_info(file_path='test2.txt', storage_account_name=storage_account_name)
+logging.info(file_info)
+
+data_lake.delete_file(file_path='default/test.txt', storage_account_name=storage_account_name)
+results = data_lake.delete_file(file_path='default/test2.txt', storage_account_name=storage_account_name)
+logging.info(results)
+```
+
