@@ -17,7 +17,7 @@ def main(directory='', storage_account_name=None, settings_path=None):
         return listed_files
     except Exception as e:
         click.echo({'error_code': e})
-        return False
+        raise Exception(e)
 
 
 if __name__ == "__main__":

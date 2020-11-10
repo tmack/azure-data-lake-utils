@@ -3,6 +3,7 @@ from data_lake_storage import AzureDataLakeUtils
 import logging
 import json
 
+
 @click.command()
 @click.option('--file-path', help='The directory to list')
 @click.option('--upload-path', help='The ADLS storage URL')
