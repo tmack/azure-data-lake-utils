@@ -3,23 +3,23 @@ import os
 import json
 
 
-class AzureDataLakeCredentialManager:
+class DataLakeSecretsManager:
 
 	def __init__(self):
 		pass
 
 	@staticmethod
 	def load_service_principal(storage_account_name, path=None):
-		# tenant_id, client_id, client_secret, storage_account_name
+		logging.info(f'Loading service principal {storage_account_name}, path: {path}')
 		# first try to load from environment variables
-		env_tenant_id, env_client_id, env_client_secret = AzureDataLakeCredentialManager._load_service_principal_from_env(storage_account_name)
+		env_tenant_id, env_client_id, env_client_secret = DataLakeSecretsManager._load_service_principal_from_env(storage_account_name)
 
 		# try and load the settings file if they exists
 		file_path_provided = True if path is None else False
 		if file_path_provided:
-			tenant_id, client_id, client_secret = AzureDataLakeCredentialManager._load_service_principal_from_file(storage_account_name)
+			tenant_id, client_id, client_secret = DataLakeSecretsManager._load_service_principal_from_file(storage_account_name)
 		else:
-			tenant_id, client_id, client_secret = AzureDataLakeCredentialManager._load_service_principal_from_file(storage_account_name, path=path)
+			tenant_id, client_id, client_secret = DataLakeSecretsManager._load_service_principal_from_file(storage_account_name, path=path)
 
 		# if the file settings don't exist, then use the env variable settings
 		if tenant_id is None:
@@ -64,11 +64,11 @@ class AzureDataLakeCredentialManager:
 
 	@staticmethod
 	def _load_service_principal_from_file(storage_account_name, path='local.settings.json'):
-		settings = AzureDataLakeCredentialManager._load_local_settings_from_file(path)
+		settings = DataLakeSecretsManager._load_local_settings_from_file(path)
 		storage_account_is_in_settings = 'StorageAccounts' in settings.keys() and storage_account_name in settings['StorageAccounts']
 		if storage_account_is_in_settings:
 			storage_accounts_settings = settings['StorageAccounts'][storage_account_name]
-			AzureDataLakeCredentialManager._file_storage_account_settings_exist(storage_accounts_settings)
+			DataLakeSecretsManager._file_storage_account_settings_exist(storage_accounts_settings)
 			tenant_id = storage_accounts_settings['tenantID']
 			client_id = storage_accounts_settings['clientID']
 			client_secret = storage_accounts_settings['clientSecret']

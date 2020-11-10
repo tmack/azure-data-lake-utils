@@ -1,6 +1,6 @@
 import unittest
 from tests.test_helper import setup_test_local_settings
-from azure_data_lake_credential_manager import AzureDataLakeCredentialManager
+from data_lake_secrets_manager import DataLakeSecretsManager
 import os
 
 
@@ -15,7 +15,7 @@ class TestGetDataLakeClient(unittest.TestCase):
         storage_account_name = 'teststorageaccount'
 
         # exercise
-        tenant_id, client_id, client_secret = AzureDataLakeCredentialManager._load_service_principal_from_file(
+        tenant_id, client_id, client_secret = DataLakeSecretsManager._load_service_principal_from_file(
                                                                         storage_account_name,
                                                                         settings_path)
 
@@ -34,7 +34,7 @@ class TestGetDataLakeClient(unittest.TestCase):
         os.environ['teststorageaccount-ClientID'] = 'envClientID'
         os.environ['teststorageaccount-ClientSecret'] = 'envClientSecret'
         # exercise
-        tenant_id, client_id, client_secret = AzureDataLakeCredentialManager._load_service_principal_from_env(
+        tenant_id, client_id, client_secret = DataLakeSecretsManager._load_service_principal_from_env(
                                                                         storage_account_name)
 
         # validate
@@ -54,7 +54,7 @@ class TestGetDataLakeClient(unittest.TestCase):
         os.environ['teststorageaccountClientSecret'] = 'envClientSecret'
 
         # exercise
-        tenant_id, client_id, client_secret = AzureDataLakeCredentialManager.load_service_principal(
+        tenant_id, client_id, client_secret = DataLakeSecretsManager.load_service_principal(
                                                                         storage_account_name,
                                                                         settings_path)
 
