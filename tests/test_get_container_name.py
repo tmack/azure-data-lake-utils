@@ -4,7 +4,7 @@ from azure_data_lake_storage import AzureDataLakeUtils
 import os
 
 
-class TestAzureDataLake(unittest.TestCase):
+class TestGetContainerName(unittest.TestCase):
 
     def setUp(self):
         setup_test_local_settings()

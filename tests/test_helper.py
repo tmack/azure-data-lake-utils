@@ -11,7 +11,9 @@ def setup_test_local_settings(testing_settings_path='test-local.settings.json'):
     with open(testing_settings_path, 'r') as f:
         local_settings = json.load(f)
     for key in local_settings.keys():
-        os.environ[key] = local_settings[key]
+        is_storage_accounts_key = key == 'StorageAccounts'
+        if is_storage_accounts_key is not True:
+            os.environ[key] = local_settings[key]
 
 
 def ask_user_to_generate_test_file(testing_settings_path):

@@ -123,6 +123,20 @@ class AzureDataLakeUtils:
         except:
             logging.exception('Unable to get data lake client')
 
+    @staticmethod
+    def initialize_storage_account_ad(storage_account_name, client_id, client_secret, tenant_id):
+
+        try:
+            global service_client
+
+            credential = ClientSecretCredential(tenant_id, client_id, client_secret)
+
+            service_client = DataLakeServiceClient(account_url="{}://{}.dfs.core.windows.net".format(
+                "https", storage_account_name), credential=credential)
+
+        except Exception as e:
+            print(e)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
