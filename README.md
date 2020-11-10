@@ -57,3 +57,10 @@ results = data_lake.delete_file(file_path='default/test2.txt', storage_account_n
 logging.info(results)
 ```
 
+
+```bash
+python3 upload_file.py --file-path "test.txt" --upload-path "default/test.txt" --overwrite true --storage-account-name "ACCOUNT_NAME" 
+python3 download_file.py --adls-path "default/test.txt" --save-path "download_test.txt" --storage-account-name "ACCOUNT_NAME" 
+python3 list_files.py --storage-account-name "ACCOUNT_NAME"
+python3 delete_file.py --file-path "test.txt" --storage-account-name "ACCOUNT_NAME" 
+```

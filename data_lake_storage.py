@@ -1,7 +1,7 @@
 import os
 from azure.storage.blob import BlobServiceClient
 from azure.identity import ClientSecretCredential
-from data_lake_secrets_manager import DataLakeSecretsManager
+import settings_manager
 import logging
 import re
 
@@ -82,9 +82,9 @@ class AzureDataLakeUtils:
     @staticmethod
     def _update_path_from_container_name(container_name, upload_path):
         if upload_path.startswith(f'{container_name}:'):
-            upload_path = upload_path[len(f'{container_name}:'.format(container_name)):]
+            upload_path = upload_path[len(f'{container_name}:'):]
         if upload_path.startswith(f'{container_name}/'):
-            upload_path = upload_path[len(f'{container_name}/'.format(container_name)):]
+            upload_path = upload_path[len(f'{container_name}/'):]
         return upload_path
 
     @staticmethod
@@ -110,10 +110,8 @@ class AzureDataLakeUtils:
 
     @staticmethod
     def _get_data_lake_client(storage_account_name, settings_path='local.settings.json'):
-
         try:
-            tenant_id, client_id, client_secret = DataLakeSecretsManager.load_service_principal(storage_account_name,
-                                                                                                path=settings_path)
+            tenant_id, client_id, client_secret = settings_manager.load_service_principal(path=settings_path)
             account_url = f"https://{storage_account_name}.blob.core.windows.net/"
             credential = ClientSecretCredential(tenant_id, client_id, client_secret)
             client = BlobServiceClient(account_url=account_url, credential=credential)
