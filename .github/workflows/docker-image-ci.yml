@@ -38,7 +38,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: REPO_URL:TAG
+        tags: tmackdh/adls-utils:beta
         file: ./Dockerfile
 
     - name: Image digest
