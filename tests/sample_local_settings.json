@@ -1,0 +1,9 @@
+{
+  "Note": "Please don't add any version of local settings to git",
+  "StorageAccounts": {
+    "teststorageaccount": {
+      "tenantID": "file_tenant_id",
+      "clientID":  "file_client_id",
+      "clientSecret":  "file_client_secret"}
+  }
+}

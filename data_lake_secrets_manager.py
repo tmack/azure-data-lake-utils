@@ -73,7 +73,7 @@ class DataLakeSecretsManager:
 			client_id = storage_accounts_settings['clientID']
 			client_secret = storage_accounts_settings['clientSecret']
 			return tenant_id, client_id, client_secret
-		logging.warning(f'Unable to load storage account {storage_account_name} from f{path}')
+		logging.warning(f'Unable to load storage account {storage_account_name} from {path}')
 		return None
 
 
