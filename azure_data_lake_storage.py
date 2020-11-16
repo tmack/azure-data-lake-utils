@@ -138,8 +138,3 @@ class AzureStorageAccount:
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.CRITICAL)
-    adcs_storage_account = AzureStorageAccount(storage_account_name='adcs')
-    results = adcs_storage_account.upload_file('test.txt', 'default/test.txt', overwrite=True)
-    files = adcs_storage_account.list('test.txt')
-    [print(x) for x in files]
-    pass
