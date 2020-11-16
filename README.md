@@ -35,7 +35,7 @@ OK
 Example Usage
 ```python
 import logging 
-from data_lake_storage import AzureDataLakeUtils
+from data_lake_storage import AzureStorageAccount
 
 data_lake = AzureDataLakeUtils()
 data = 'testing testing'

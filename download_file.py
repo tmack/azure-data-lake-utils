@@ -1,6 +1,5 @@
-
 import click
-from data_lake_storage import AzureDataLakeUtils
+from azure_data_lake_storage import AzureStorageAccount
 import logging
 import json
 
@@ -11,7 +10,7 @@ import json
 @click.option('--settings-path', default="local.settings.json", help='The file path to the local.settings')
 def main(adls_path, save_path, storage_account_name=None, settings_path=None):
     try:
-        azure_data_lake = AzureDataLakeUtils()
+        azure_data_lake = AzureStorageAccount()
         save_path = azure_data_lake.download(adls_path, save_path, storage_account_name=storage_account_name, settings_path=settings_path)
         response = {'save_path': save_path, 'error_code': None}
         click.echo(json.dumps(response))

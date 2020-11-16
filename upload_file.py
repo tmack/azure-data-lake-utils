@@ -1,5 +1,5 @@
 import click
-from data_lake_storage import AzureDataLakeUtils
+from azure_data_lake_storage import AzureStorageAccount
 import logging
 import json
 
@@ -12,7 +12,7 @@ import json
 @click.option('--settings-path', default='local.settings.json', help='The file path to the local.settings')
 def main(file_path, upload_path, overwrite=False, storage_account_name=None, settings_path=None):
     try:
-        azure_data_lake = AzureDataLakeUtils()
+        azure_data_lake = AzureStorageAccount()
         upload_results = azure_data_lake.upload_file(file_path, upload_path, overwrite, storage_account_name, settings_path)
         results_to_return = {'date': upload_results.get('date'),
                              'error_code': upload_results.get('error_code'),

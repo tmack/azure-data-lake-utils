@@ -1,6 +1,6 @@
 import unittest
 from tests.test_helper import setup_test_local_settings
-from data_lake_storage import AzureDataLakeUtils
+from azure_data_lake_storage import AzureStorageAccount
 import os
 
 
@@ -18,7 +18,7 @@ class TestGetContainerName(unittest.TestCase):
         upload_path = 'test.txt'
 
         # exercise
-        container_name = AzureDataLakeUtils._get_container_name(upload_path)
+        container_name = AzureStorageAccount._get_container_name(upload_path)
 
         # validate
         expected_container_name_container = 'default'
@@ -30,7 +30,7 @@ class TestGetContainerName(unittest.TestCase):
         os.environ['DataLakeContainerName'] = 'testcontainername'
 
         # exercise
-        container_name = AzureDataLakeUtils._get_container_name(upload_path)
+        container_name = AzureStorageAccount._get_container_name(upload_path)
 
         # validate
         expected_container_name_container = 'testcontainername'
@@ -41,7 +41,7 @@ class TestGetContainerName(unittest.TestCase):
         upload_path = 'testcontainername/test.txt'
 
         # exercise
-        container_name = AzureDataLakeUtils._get_container_name(upload_path)
+        container_name = AzureStorageAccount._get_container_name(upload_path)
 
         # validate
         expected_container_name_container = 'testcontainername'
@@ -52,7 +52,7 @@ class TestGetContainerName(unittest.TestCase):
         upload_path = 'testcontainername:test.txt'
 
         # exercise
-        container_name = AzureDataLakeUtils._get_container_name(upload_path)
+        container_name = AzureStorageAccount._get_container_name(upload_path)
 
         # validate
         expected_container_name_container = 'testcontainername'
@@ -64,7 +64,7 @@ class TestGetContainerName(unittest.TestCase):
         os.environ['DataLakeContainerName'] = 'envcontainername'
 
         # exercise
-        container_name = AzureDataLakeUtils._get_container_name(upload_path)
+        container_name = AzureStorageAccount._get_container_name(upload_path)
 
         # validate
         expected_container_name_container = 'testcontainername'
@@ -77,7 +77,7 @@ class TestGetContainerName(unittest.TestCase):
         os.environ['DataLakeContainerName'] = really_long_container_name
 
         # exercise
-        container_name = AzureDataLakeUtils._get_container_name(upload_path)
+        container_name = AzureStorageAccount._get_container_name(upload_path)
 
         # validate
         self.assertEqual(really_long_container_name, container_name)
@@ -89,7 +89,7 @@ class TestGetContainerName(unittest.TestCase):
         os.environ['DataLakeContainerName'] = capitalized_container_name
 
         # exercise
-        container_name = AzureDataLakeUtils._get_container_name(upload_path)
+        container_name = AzureStorageAccount._get_container_name(upload_path)
 
         # validate
         expected_container_name = 'default'
@@ -102,7 +102,7 @@ class TestGetContainerName(unittest.TestCase):
         os.environ['DataLakeContainerName'] = capitalized_container_name
 
         # exercise
-        container_name = AzureDataLakeUtils._get_container_name(upload_path)
+        container_name = AzureStorageAccount._get_container_name(upload_path)
 
         # validate
         expected_container_name = 'default'
